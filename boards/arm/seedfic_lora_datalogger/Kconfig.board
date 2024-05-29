@@ -1,0 +1,8 @@
+# SeedFic LoRa DataLogger board configuration
+
+# Copyright (c) 2023 SEEDFIC Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_SEEDFIC_LORA_DATALOGGER
+	bool "SeedFic LoRa DataLogger"
+	depends on SOC_STM32WLE5XX

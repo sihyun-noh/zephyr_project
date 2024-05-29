@@ -1,0 +1,11 @@
+# SeedFic LoRa DataLogger board configuration
+
+# Copyright (c) 2023 SEEDFIC Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+if BOARD_SEEDFIC_LORA_IRRIGRATION
+
+config BOARD
+	default "seedfic_lora_irrigration"
+
+endif # BOARD_SEEDFIC_LORA_DATALOGGER

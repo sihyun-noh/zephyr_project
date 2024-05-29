@@ -1,0 +1,33 @@
+# Copyright (c) 2018, Linaro Limited
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  This allows you to define a group of relays. Each relay in the group is
+  controlled by a GPIO. Each relay is defined in a child node of the
+  gpio-relay node.
+
+  Here is an example which defines a relay in the node /relays:
+
+  / {
+  	relays {
+  		compatible = "gpio-relays";
+  		realy_0 {
+  			gpios = <&gpio0 1 GPIO_ACTIVE_LOW>;
+  		};
+  	};
+  };
+
+compatible: "gpio-relays"
+
+child-binding:
+  description: GPIO relay child node
+  properties:
+    gpios:
+      type: phandle-array
+      required: true
+    label:
+      type: string
+      description: |
+        Human readable string describing the relay. It can be used by an
+        application to identify this relay or to retrieve its number/index
+        (i.e. child node number) on the parent device.

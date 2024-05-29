@@ -1,0 +1,107 @@
+// DeviceTree overlay for SEEDFIC LoRa Rak3172
+// SPDX-License-Identifier: Apache-2.0
+// This is settig irrigration with RAK3172 in zephyr
+
+/ {
+	chosen {
+		zephyr,console = &usart2;
+		zephyr,shell-uart = &usart2;
+	};
+
+	aliases {
+	 	relay1 = &relay1;
+		relay2 = &relay2;
+		power = &power;
+		battery = &battery;
+		led1 = &state1;
+		led2 = &state2;
+		waterflower = &button;
+	};
+
+	relays {
+		compatible = "gpio-relays";
+		power: power_ctrl {
+			gpios = <&gpioa 15 GPIO_ACTIVE_LOW>;
+			label = "power-ctrl";
+		};
+		battery: battery_ctrl {
+			gpios = <&gpioa 1 GPIO_ACTIVE_LOW>;
+			label = "battery-ctrl";
+		};
+		relay1: relay_1 {
+			gpios = <&gpiob 12 GPIO_ACTIVE_LOW>;
+			label = "relay-1";
+		};
+		relay2: relay_2 {
+			gpios = <&gpiob 2 GPIO_ACTIVE_LOW>;
+			label = "relay-2";
+		};
+	};
+
+	leds{
+		compatible = "gpio-leds";
+			state1: state_1{
+				gpios = < &gpioa 9 GPIO_ACTIVE_LOW>;
+				label = "state 1";
+			};
+			state2: state_2{
+				gpios = < &gpioa 10 GPIO_ACTIVE_LOW>;
+				label = "state 2";
+			};
+	};
+
+	buttons{
+		compatible = "gpio-keys";
+		button: button{
+			gpios = <&gpiob 5 GPIO_ACTIVE_HIGH>;
+		};
+	};
+
+	zephyr,user {
+		io-channels = <&adc1 2>;
+	};
+};
+
+&i2c2 {
+	pinctrl-0 = <&i2c2_scl_pa12 &i2c2_sda_pa11>;
+	pinctrl-names = "default";
+	status = "okay";
+	clock-frequency = <100000>;
+};
+
+&usart2 {
+	pinctrl-0 = <&usart2_tx_pa2 &usart2_rx_pa3>;
+	pinctrl-names = "default";
+	current-speed = <0x1c200>;
+	status = "okay";
+};
+
+&adc1 {
+	pinctrl-0 = <&adc_in2_pb3>;
+	pinctrl-names = "default";
+	st,adc-clock-source = <1>;
+	st,adc-prescaler = <1>;
+	status = "okay";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@2 {
+		reg = <2>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+		zephyr,input-positive = <3>;
+	};
+};
+
+&pinctrl {
+	usart2_rx_pa3: usart2_rx_pa3 {
+		pinmux = <STM32_PINMUX('A', 3, AF7)>;
+	};
+	usart2_tx_pa2: usart2_tx_pa2 {
+		pinmux = <STM32_PINMUX('A', 2, AF7)>;
+		bias-pull-up;
+	};
+};

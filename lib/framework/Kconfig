@@ -1,0 +1,65 @@
+menuconfig FRAMEWORK
+  bool "SEED system event and message framework"
+  help
+     Inter-task communication using messages and events
+
+if FRAMEWORK
+
+choice
+  prompt "System Framework Assertion"
+  optional
+    help
+      The default is disabled.
+
+  config SYS_ASSRET_ENABLED
+    bool "Enable Framework assertion"
+
+  config SYS_ASSERT_ENABLED_USE_ZEPHYR
+    bool "Framework assertion maps to Zephyr assertion"
+    help
+      The framework assertion is enabled if
+      Zephyr assertions are enabled.
+
+endchoice
+
+if SYS_ASSERT_ENABLED || SYS_ASSERT_ENABLED_USE_ZEPHYR
+
+config SYS_DEBUG
+  bool "Enable System Framework Debug (and debug assertions)"
+
+config SYS_ASSERT_ON_BROADCAST_FROM_ISR
+  bool "Assert when a broadcast msg occurs in ISR context"
+  default y
+  help
+     Broadcast can be time consuming on some processors.
+
+endif # SYS_ASSERT_ENABLED || SYS_ASSERT_ENABLED_USE_ZEPHYR
+
+config SYS_MAX_MSG_RECEIVES
+  int "The maximum number of messages receivers"
+  default 4
+
+config BUFFER_POOL_SIZE
+  int "Zephyr heap used by the system framework"
+  default 1024
+
+config BUFFER_POOL_STATS
+	bool "Enable buffer pool statistics"
+
+config BUFFER_POOL_WINDOW_SIZE
+	int "Number of entries in stats of recently used sizes"
+	depends on BUFFER_POOL_STATS
+	default 0
+	help
+	  Requires 2 bytes per entry
+
+config BUFFER_POOL_CHECK_DOUBLE_FREE
+	bool "Print error if duplicate free is detected"
+	help
+	  Requires 4 bytes per allocation.
+
+config BUFFER_POOL_SHELL
+	bool "Enable Buffer Pool Shell"
+	select BUFFER_POOL_STATS
+
+endif #FRAMEWORK

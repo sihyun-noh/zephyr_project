@@ -1,0 +1,109 @@
+// DeviceTree overlay for Lemon IoT LoRa RAK3172
+// SPDX-License-Identifier: Apache-2.0
+
+/ {
+	chosen {
+		zephyr,console = &usart2;
+		zephyr,shell-uart = &usart2;
+	};
+	aliases {
+		sensorbus = &i2c2;
+	    relay1 = &relay9;
+		relay2 = &relay8;
+		power = &power;
+		battery = &battery;
+		modbus-1 = &modbus1;
+	};
+
+	relays {
+		compatible = "gpio-relays";
+		power: power_ctrl {
+			gpios = <&gpioa 0 GPIO_ACTIVE_LOW>;
+			label = "power-ctrl";
+		};
+		battery: battery_ctrl {
+			gpios = <&gpioa 1 GPIO_ACTIVE_LOW>;
+			label = "battery-ctrl";
+		};
+		relay8: relay_8 {
+			gpios = <&gpioa 8 GPIO_ACTIVE_LOW>;
+			label = "relay-2";
+		};
+		relay9: relay_9 {
+			gpios = <&gpioa 9 GPIO_ACTIVE_LOW>;
+			label = "relay-1";
+		};
+	};
+
+	zephyr,user {
+		io-channels = <&adc1 2>;
+	};
+};
+
+
+&i2c2 {
+	pinctrl-0 = <&i2c2_scl_pa12 &i2c2_sda_pa11>;
+	pinctrl-names = "default";
+	status = "okay";
+	clock-frequency = <100000>;
+	shtcx@70 {
+		compatible = "sensirion,shtcx";
+		reg = <0x70>;
+		chip = "shtc3";
+		measure-mode = "normal";
+	};
+	bme680@76 {
+		compatible = "bosch,bme680";
+		reg = <0x76>;
+	};
+	sht3xd@44 {
+		compatible = "sensirion,sht3xd";
+		reg = <0x44>;
+	};
+};
+
+&usart1 {
+	pinctrl-names = "default";
+	current-speed = <0x12c0>;
+	status = "okay";
+	modbus1: modbus_1 {
+		compatible = "zephyr,modbus-serial";
+		label = "modbus-1";
+		status = "okay";
+	};
+};
+
+&usart2 {
+	pinctrl-0 = <&usart2_tx_pa2 &usart2_rx_pa3>;
+	pinctrl-names = "default";
+	current-speed = <0x1c200>;
+	status = "okay";
+};
+
+&adc1 {
+	pinctrl-0 = <&adc_in2_pb3>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@2 {
+		reg = <2>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+		zephyr,input-positive = <3>;
+	};
+};
+
+&pinctrl {
+	usart2_rx_pa3: usart2_rx_pa3 {
+		pinmux = <STM32_PINMUX('A', 3, AF7)>;
+	};
+	usart2_tx_pa2: usart2_tx_pa2 {
+		pinmux = <STM32_PINMUX('A', 2, AF7)>;
+		bias-pull-up;
+	};
+};
